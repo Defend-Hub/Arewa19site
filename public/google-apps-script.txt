@@ -1,0 +1,74 @@
+// Google Apps Script to save form submissions to a Google Sheet
+// How to use:
+// 1. Create a new Google Sheet
+// 2. Go to Extensions > Apps Script
+// 3. Replace the code in the script editor with this code
+// 4. Save the project with a name like "Arewa19 Form Handler"
+// 5. Deploy as a web app:
+//    - Click Deploy > New deployment
+//    - Select type: Web app
+//    - Set "Who has access" to "Anyone" 
+//    - Click Deploy
+// 6. Copy the web app URL and replace the placeholder in ContactSection.js
+
+function doGet(e) {
+  return HtmlService.createHtmlOutput("The GET method is not supported. Please use POST.");
+}
+
+function doPost(e) {
+  try {
+    // Get the active spreadsheet
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName("Form Responses") || ss.insertSheet("Form Responses");
+    
+    // Set up headers if the sheet is empty
+    if (sheet.getLastRow() === 0) {
+      sheet.appendRow([
+        "Timestamp", 
+        "Full Name", 
+        "Email", 
+        "Phone", 
+        "State", 
+        "Membership Type", 
+        "Message"
+      ]);
+    }
+    
+    // Extract form data
+    const timestamp = new Date();
+    const name = e.parameter.name || "N/A";
+    const email = e.parameter.email || "N/A";
+    const phone = e.parameter.phone || "N/A";
+    const state = e.parameter.state || "N/A";
+    const membership = e.parameter.membership || "N/A";
+    const message = e.parameter.message || "N/A";
+    
+    // Append data to the sheet
+    sheet.appendRow([
+      timestamp,
+      name,
+      email,
+      phone,
+      state,
+      membership,
+      message
+    ]);
+    
+    // Return success response
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        "result": "success",
+        "message": "Data saved successfully"
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    // Return error response
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        "result": "error",
+        "message": error.toString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}

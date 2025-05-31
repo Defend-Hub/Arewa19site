@@ -181,12 +181,30 @@
         
               <div class="col-lg-12">
                 <div class="form-container" style="display: flex; justify-content: center; width: 100%; max-width: 100%; overflow: hidden;">
-                  <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScu275bUfxZF9cCS0pwUU8BRlOIaYV1_inzeIe6LWMWrkUn5A/viewform?embedded=true" 
-                    style="width: 100%; max-width: 640px; height: 1500px; border: none;">
-                    Loading…
-                  </iframe>
-                </div></div>
+                  <div id="form-wrapper"></div>
+                    <iframe id="google-form" src="https://docs.google.com/forms/d/e/1FAIpQLScu275bUfxZF9cCS0pwUU8BRlOIaYV1_inzeIe6LWMWrkUn5A/viewform?embedded=true" 
+                      style="width: 100%; max-width: 640px; height: 1500px; border: none;"
+                      onload="handleFormSubmit(this)">
+                      Loading…
+                    </iframe>
+                  </div>
+                  <div id="thank-you" style="display: none; text-align: center; padding: 50px;">
+                    <h2>Thank you for your submission!</h2>
+                    <p>We will get back to you soon.</p>
+                  </div>
+                </div>
               </div><!-- End Contact Form -->
+
+              <script>
+              function handleFormSubmit(iframe) {
+                iframe.addEventListener('load', function() {
+                  if (iframe.contentWindow.document.body.innerText.includes('Your response has been recorded')) {
+                    document.getElementById('form-wrapper').style.display = 'none';
+                    document.getElementById('thank-you').style.display = 'block';
+                  }
+                });
+              }
+              </script>
               
             </div>
     

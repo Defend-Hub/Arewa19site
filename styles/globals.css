@@ -1,0 +1,233 @@
+/* Import main CSS from public directory */
+@import url('/assets/css/main.css');
+
+/* Next.js specific overrides */
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Poppins', 'Raleway', 'Roboto', sans-serif;
+}
+
+/* Theme transition styles */
+* {
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Fix for next/image and Bootstrap compatibility */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Navigation styles for both desktop and mobile */
+.navmenu {
+  padding: 0;
+}
+
+.navmenu ul {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  list-style: none;
+  align-items: center;
+}
+
+.navmenu li {
+  position: relative;
+}
+
+.navmenu a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 10px 30px;
+  font-family: var(--font-primary);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color, #000000);
+  white-space: nowrap;
+  transition: 0.3s;
+}
+
+/* Ensure links are visible in both themes */
+[data-bs-theme="light"] .navmenu a {
+  color: #333333;
+}
+
+[data-bs-theme="dark"] .navmenu a {
+  color: #ffffff;
+}
+
+/* Make sure buttons inside links maintain proper styling */
+.navmenu a button {
+  color: inherit;
+}
+
+/* Join Us button styles for regular view */
+.btn-get-started {
+  display: inline-block;
+  padding: 8px 30px;
+  border-radius: 50px;
+  background-color: var(--accent-color, #0d6efd);
+  color: var(--contrast-color, #ffffff) !important;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  transition: 0.3s;
+}
+
+.btn-get-started:hover {
+  background-color: var(--accent-color-hover, #0b5ed7);
+  transform: scale(1.05);
+}
+
+.navmenu a:hover, .navmenu .active {
+  color: var(--accent-color);
+}
+
+/* Hide mobile nav toggle on desktop and navmenu on mobile by default */
+@media (max-width: 1200px) {
+  .navmenu {
+    display: none;
+  }
+}
+
+@media (min-width: 1201px) {
+  .mobile-nav-toggle {
+    display: none;
+  }
+}
+
+/* Mobile nav fixes for Next.js */
+.mobile-nav-toggle {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 9998;
+  border: 0;
+  background: none;
+  font-size: 28px;
+  cursor: pointer;
+  line-height: 0;
+  color: var(--text-color, #000000);
+}
+
+/* Ensure mobile toggle is visible in both themes */
+[data-bs-theme="light"] .mobile-nav-toggle {
+  color: #333333;
+}
+
+[data-bs-theme="dark"] .mobile-nav-toggle {
+  color: #ffffff;
+}
+
+.mobile-nav-active {
+  overflow: hidden;
+  position: relative;
+}
+
+.mobile-nav-active .navmenu {
+  display: block !important; /* Force display regardless of media queries */
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9); /* Darker background for better contrast */
+  backdrop-filter: blur(10px);
+  overflow-y: auto;
+  transition: 0.3s;
+  z-index: 9997;
+  padding: 80px 15px 15px 15px;
+  /* Ensure visibility in both themes */
+  visibility: visible;
+  opacity: 1;
+}
+
+.mobile-nav-active .navmenu ul {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+}
+
+.mobile-nav-active .navmenu a {
+  display: block;
+  padding: 10px 15px;
+  font-size: 18px;
+  font-weight: 600;
+  color: white !important; /* Force white text in mobile nav regardless of theme */
+  transition: 0.3s;
+}
+
+/* Ensure mobile nav links are visible in both themes */
+[data-bs-theme="light"] .mobile-nav-active .navmenu a,
+[data-bs-theme="dark"] .mobile-nav-active .navmenu a,
+.mobile-nav-active .navmenu a,
+.mobile-nav-active .navmenu ul li a {
+  color: white !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Add a highlight effect to make links more visible */
+.mobile-nav-active .navmenu ul li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  width: 100%;
+}
+
+/* Join Us button styling in mobile view */
+.mobile-nav-active .nav-cta-button a {
+  padding: 0;
+}
+
+.mobile-nav-active .btn-get-started {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 30px !important;
+  border-radius: 50px;
+  background-color: var(--accent-color);
+  color: var(--contrast-color) !important;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  transition: 0.3s;
+  text-align: center;
+  width: 100%;
+}
+
+.mobile-nav-active .btn-get-started:hover {
+  background-color: var(--accent-color-hover, var(--accent-color));
+  opacity: 0.9;
+}
+
+.mobile-nav-active .navmenu a:hover,
+.mobile-nav-active .navmenu .active {
+  color: var(--accent-color);
+}
+
+.mobile-nav-active .mobile-nav-toggle {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+  z-index: 9999;
+  color: white;
+}
+
+/* Ensure smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Additional Next.js specific styles can be added here */

@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST='{"components\\\\AboutSection.js -> glightbox":{"id":7727,"files":["static/chunks/727.c080ee211e37326e.js"]},"pages\\\\_app.js -> aos":{"id":2711,"files":["static/chunks/711.aa730196f53cd428.js"]},"pages\\\\_app.js -> bootstrap/dist/js/bootstrap.bundle.min.js":{"id":8702,"files":["static/chunks/702.05b437f3f576114d.js"]}}';
