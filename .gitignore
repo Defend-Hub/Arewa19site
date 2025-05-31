@@ -66,5 +66,10 @@ node_modules/
 .env
 .env.local
 
+# Google Cloud credentials
+*-cf3e883365bc.json
+pages/api/striking-effort-439520-v9-cf3e883365bc.json
+*.json.credentials
+
 # dataconnect generated files
 .dataconnect
