@@ -33,6 +33,18 @@
   --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
   --nav-dropdown-color: #444444; /* Used for navigation links of the dropdown items in the navigation menu. */
   --nav-dropdown-hover-color: #e69600; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+  --nav-mobile-overlay-background: rgba(33, 37, 41, 0.8); /* Mobile navigation overlay background */
+  --nav-mobile-toggle-color: #ffffff; /* Mobile navigation toggle icon color */
+}
+
+/* Dark Mode Nav Variables */
+[data-bs-theme="dark"] {
+  --nav-color: #ffffff;  /* Light text for dark backgrounds */
+  --nav-mobile-background-color: #252525; /* Dark mobile menu background */
+  --nav-dropdown-background-color: #121212; /* Dark dropdown background */
+  --nav-dropdown-color: #e0e0e0; /* Light dropdown text */
+  --nav-mobile-overlay-background: rgba(0, 0, 0, 0.8); /* Darker overlay for dark theme */
+  --nav-mobile-toggle-color: #ffffff; /* Light toggle icon color */
 }
 
 /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
@@ -571,7 +583,8 @@ h6 {
 
   .navmenu .dropdown>.dropdown-active {
     display: block;
-    background-color: rgba(33, 37, 41, 0.03);
+    background-color: var(--nav-dropdown-background-color);
+    opacity: 0.9;
   }
 
   .mobile-nav-active {
@@ -579,7 +592,7 @@ h6 {
   }
 
   .mobile-nav-active .mobile-nav-toggle {
-    color: #fff;
+    color: var(--nav-mobile-toggle-color);
     position: absolute;
     font-size: 32px;
     top: 15px;
@@ -592,7 +605,7 @@ h6 {
     position: fixed;
     overflow: hidden;
     inset: 0;
-    background: rgba(33, 37, 41, 0.8);
+    background: var(--nav-mobile-overlay-background);
     transition: 0.3s;
   }
 
