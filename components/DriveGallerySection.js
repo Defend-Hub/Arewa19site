@@ -235,27 +235,31 @@ const DriveGallerySection = () => {
                 {images.map((image) => (
                   <div key={image.id} className="col-xl-3 col-lg-4 col-md-6 portfolio-item">
                     <div className="portfolio-content h-100">
-                      <img 
-                        src={image.imageUrl} 
-                        className="img-fluid" 
-                        alt={image.name || 'Arewa19 event'} 
-                        style={{width: '100%', height: '250px', objectFit: 'cover'}}
-                        onError={(e) => {
-                          // First attempt failed, try alternate URL if available
-                          if (e.target.src === image.imageUrl && image.altImageUrl) {
-                            console.log('Trying alternate image URL for:', image.name);
-                            e.target.src = image.altImageUrl;
-                          } else {
-                            // If alternate URL also fails or doesn't exist, use placeholder
-                            console.log('Using placeholder for:', image.name);
+                      <div style={{position: 'relative', width: '100%', height: '250px'}}>
+                        {/* Use our direct Google Drive API proxy which handles authentication */}
+                        <img
+                          src={`/api/image-proxy?id=${image.id}`}
+                          className="img-fluid"
+                          alt={image.name || 'Arewa19 event'}
+                          style={{
+                            width: '100%', 
+                            height: '250px', 
+                            objectFit: 'cover',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0
+                          }}
+                          onError={(e) => {
+                            console.log(`Direct API proxy failed for: ${image.name}`);
+                            // If our proxy fails, use placeholder
                             e.target.onerror = null;
                             e.target.src = '/assets/img/placeholder.jpg';
-                          }
-                        }}
-                      />
+                          }}
+                        />
+                      </div>
                       <div className="portfolio-info">
                         <a 
-                          href={image.imageUrl} 
+                          href={`/api/image-proxy?id=${image.id}`}
                           data-gallery="drive-gallery" 
                           className="glightbox preview-link"
                         >

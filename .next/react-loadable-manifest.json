@@ -1,20 +1,20 @@
 {
   "components\\AboutSection.js -> glightbox": {
-    "id": 7727,
+    "id": "components\\AboutSection.js -> glightbox",
     "files": [
-      "static/chunks/727.c080ee211e37326e.js"
+      "static/chunks/node_modules_glightbox_dist_js_glightbox_min_js.js"
     ]
   },
   "pages\\_app.js -> aos": {
-    "id": 2711,
+    "id": "pages\\_app.js -> aos",
     "files": [
-      "static/chunks/711.aa730196f53cd428.js"
+      "static/chunks/node_modules_aos_dist_aos_js.js"
     ]
   },
   "pages\\_app.js -> bootstrap/dist/js/bootstrap.bundle.min.js": {
-    "id": 8702,
+    "id": "pages\\_app.js -> bootstrap/dist/js/bootstrap.bundle.min.js",
     "files": [
-      "static/chunks/702.05b437f3f576114d.js"
+      "static/chunks/node_modules_bootstrap_dist_js_bootstrap_bundle_min_js.js"
     ]
   }
 }

@@ -1,16 +1,41 @@
 import { google } from 'googleapis';
+import fs from 'fs';
+import path from 'path';
 
 // Configure Google Drive API
 const configureGoogleDrive = () => {
-  // Use environment variables for credentials
-  const auth = new google.auth.JWT(
-    process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    null,
-    process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    ['https://www.googleapis.com/auth/drive.readonly']
-  );
-
-  return google.drive({ version: 'v3', auth });
+  try {
+    // First try to use environment variables if available
+    if (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL && process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY) {
+      console.log('Using environment variables for Google Drive authentication');
+      const auth = new google.auth.JWT(
+        process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        null,
+        process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        ['https://www.googleapis.com/auth/drive.readonly']
+      );
+      
+      return google.drive({ version: 'v3', auth });
+    }
+    
+    // If environment variables are not available, try to use credential file
+    const credentialPath = path.join(process.cwd(), 'pages', 'api', 'striking-effort-439520-v9-cf3e883365bc.json');
+    
+    if (fs.existsSync(credentialPath)) {
+      console.log('Using credential file for Google Drive authentication');
+      const auth = new google.auth.GoogleAuth({
+        keyFile: credentialPath,
+        scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+      });
+      
+      return google.drive({ version: 'v3', auth });
+    }
+    
+    throw new Error('No valid Google Drive authentication credentials found');
+  } catch (error) {
+    console.error('Error configuring Google Drive:', error);
+    throw error;
+  }
 };
 
 export default async function handler(req, res) {
@@ -37,6 +62,8 @@ export default async function handler(req, res) {
 
     const files = response.data.files;
     
+    console.log(`Found ${files.length} images in Google Drive folder`);    
+    
     // Process files to extract metadata and state information
     const processedFiles = files.map(file => {
       // Try to extract state from file description or name
@@ -60,30 +87,41 @@ export default async function handler(req, res) {
         }
       }
       
-      // Generate multiple URL options for the frontend to try
-      // Option 1: Direct download link
-      let imageUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+      // Store all possible image URL formats to try on the frontend
+      const imageUrls = {
+        // Format 1: Direct export view link (most direct but sometimes blocked by CORS)
+        directLink: `https://drive.google.com/uc?export=view&id=${file.id}`,
+        
+        // Format 2: If thumbnailLink exists, modify it to get a larger preview
+        // This is often the most reliable for displaying in an <img> tag
+        thumbnailUrl: file.thumbnailLink ? file.thumbnailLink.replace(/=s\d+$/, '=s1000') : null,
+        
+        // Format 3: Alternative Google Drive thumbnail format
+        altThumbnail: `https://drive.google.com/thumbnail?id=${file.id}&sz=w1000`,
+        
+        // Format 4: Web content link if available (usually downloads the file)
+        webContentLink: file.webContentLink || null,
+        
+        // Format 5: Googleusercontent format
+        googleusercontent: `https://lh3.googleusercontent.com/d/${file.id}=s1000`,
+      };
       
-      // Option 2: If thumbnailLink exists, modify it to get a larger preview
-      // This is often more reliable for display purposes
-      let thumbnailUrl = file.thumbnailLink;
-      if (thumbnailUrl) {
-        // The thumbnail link typically looks like this: https://lh3.googleusercontent.com/...=s220
-        // Change the size parameter to get a larger image
-        thumbnailUrl = thumbnailUrl.replace(/=s\d+$/, '=s1000');
-        // Use this as the primary URL since it's often more reliable
-        imageUrl = thumbnailUrl;
-      }
-      
-      // Option 3: Alternative Google Drive URL format
-      const altImageUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1000`;
+      // Choose the best image URL to use as primary (prioritizing the most reliable formats)
+      const imageUrl = imageUrls.thumbnailUrl || 
+                      imageUrls.directLink || 
+                      imageUrls.altThumbnail || 
+                      imageUrls.googleusercontent || 
+                      '/assets/img/placeholder.jpg';
+                      
+      console.log(`Processed image: ${file.name}, ID: ${file.id}, State: ${state}`);
       
       return {
         id: file.id,
         name: file.name,
         imageUrl,
         thumbnailUrl: file.thumbnailLink,
-        altImageUrl,
+        webContentLink: file.webContentLink,
+        imageUrls, // Include all URL formats
         state,
         metadata: file.imageMediaMetadata || {},
       };

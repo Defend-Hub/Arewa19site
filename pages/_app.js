@@ -153,14 +153,7 @@ function MyApp({ Component, pageProps }) {
         }}
       />
       
-      {/* Add vendor CSS with proper next/head management */}
-      <Head>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/swiper@11.0.5/swiper-bundle.min.css" rel="stylesheet" />
-      </Head>
+      {/* External CSS stylesheets moved to _document.js */}
       
       <Component {...pageProps} />
     </ThemeProvider>

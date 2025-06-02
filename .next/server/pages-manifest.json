@@ -1,1 +1,10 @@
-{"/404":"pages/404.html","/_error":"pages/_error.js","/community":"pages/community.html","/":"pages/index.html","/_document":"pages/_document.js","/gallery":"pages/gallery.html","/api/drive-images":"pages/api/drive-images.js","/_app":"pages/_app.js","/portfolio-details":"pages/portfolio-details.html","/service-details":"pages/service-details.html"}
+{
+  "/_app": "pages/_app.js",
+  "/_error": "pages/_error.js",
+  "/_document": "pages/_document.js",
+  "/": "pages/index.js",
+  "/gallery": "pages/gallery.js",
+  "/404": "pages/404.js",
+  "/api/image-proxy": "pages/api/image-proxy.js",
+  "/api/drive-images": "pages/api/drive-images.js"
+}
