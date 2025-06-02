@@ -22,7 +22,14 @@ export default function Community() {
         </div>
         
         <TeamSection />
-        <ContactSection />
+        <ContactSection 
+          pageType="community"
+          sectionTitle="Join Us"
+          sectionDescription="Become a Member"
+          formSource="community_page"
+          includeMembershipType={true}
+          useSimpleLayout={false}
+        />
       </main>
 
       <Footer />

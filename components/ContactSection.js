@@ -1,7 +1,14 @@
 import { useState } from 'react';
 import { useTheme } from './ThemeContext';
 
-const ContactSection = () => {
+const ContactSection = ({ 
+  pageType = 'community', // 'community' or 'registration'
+  sectionTitle = 'Join Us',
+  sectionDescription = 'Become a Member',
+  formSource = 'community_page',
+  includeMembershipType = true,
+  useSimpleLayout = false
+}) => {
   const { theme } = useTheme();
   const logoSrc = theme === 'dark' ? '/assets/img/logolight.png' : '/assets/img/logodark.png';
   
@@ -31,19 +38,44 @@ const ContactSection = () => {
     }));
   };
 
+  // State for controlling the modal visibility
+  const [showModal, setShowModal] = useState(false);
+  
+  // Function to handle opening and closing the modal
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  };
+  
+  // Handler for closing the modal and resetting the form
+  const closeModalAndResetForm = () => {
+    setShowModal(false);
+    // Reset the form state
+    setFormState({
+      fullName: '',
+      email: '',
+      stateOfResidence: '',
+      phoneNumber: '',
+      stateOfOrigin: '',
+      dateOfBirth: '',
+      gender: '',
+      lga: '',
+      membership: 'Regular Member'
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormStatus({ ...formStatus, loading: true, error: false });
 
     try {
-      // Replace this URL with your Google Apps Script web app URL when you have it
-      const scriptURL = 'https://script.google.com/macros/s/YOUR_GOOGLE_SCRIPT_ID/exec';
+      // Google Apps Script web app URL
+      const scriptURL = 'https://script.google.com/macros/s/AKfycbyHm8StOYZGk4PKM-h_ugxlHfvgJIGL-Z7a39xUgAa4Bx4WWwClOlhgtXflHLm6Uh9s/exec';
       
       // Add timestamp to the form data
       const formDataWithTimestamp = {
         ...formState,
         timestamp: new Date().toISOString(),
-        formSource: 'community_page' // To identify which form was used
+        formSource: formSource // To identify which form was used
       };
       
       // Create form data
@@ -58,49 +90,155 @@ const ContactSection = () => {
         body: formData
       });
       
-      if (response.ok) {
-        // Reset form and show success message
-        setFormState({
-          fullName: '',
-          email: '',
-          stateOfResidence: '',
-          phoneNumber: '',
-          stateOfOrigin: '',
-          dateOfBirth: '',
-          gender: '',
-          lga: '',
-          membership: 'Regular Member'
-        });
-        setFormStatus({
-          loading: false,
-          error: false,
-          success: true,
-          errorMessage: ''
-        });
-      } else {
-        throw new Error('Server responded with an error');
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
       }
+      
+      // Try to parse JSON response (if available)
+      let result;
+      try {
+        result = await response.json();
+        console.log('Success:', result);
+      } catch (parseError) {
+        console.log('Success (no JSON response)');
+      }
+      
+      // Update form status
+      setFormStatus({ loading: false, error: false, success: true });
+      
+      // Show the congratulations modal on successful submission
+      setShowModal(true);
+      
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error('Form submission error:', error);
       setFormStatus({
         loading: false,
         error: true,
         success: false,
-        errorMessage: 'Failed to submit the form. Please try again later.'
+        errorMessage: error.message || 'Form submission failed. Please try again.'
       });
     }
   };
 
   return (
     <section id="contact" className="contact section">
+      {/* Congratulations Modal */}
+      {showModal && (
+        <div className="modal-backdrop" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1050
+        }}>
+          <div className={`modal-content ${theme === 'dark' ? 'bg-dark text-light' : 'bg-light text-dark'}`} style={{
+            width: '90%',
+            maxWidth: '500px',
+            padding: '2rem',
+            borderRadius: '8px',
+            boxShadow: '0 5px 15px rgba(0,0,0,.2)'
+          }}>
+            <div className="text-center mb-4">
+              <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '4rem' }}></i>
+              <h2 className="mt-3">Congratulations!</h2>
+              <p className="lead">Thank you for joining the Arewa19 community! Your membership application has been submitted successfully.</p>
+              <p>One of our representatives will contact you soon with more information.</p>
+            </div>
+            <div className="d-flex justify-content-center">
+              <button 
+                className="btn btn-primary px-4 py-2" 
+                onClick={closeModalAndResetForm}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Section Title */}
       <div className="container section-title" data-aos="fade-up">
-        <h2>Join Us</h2>
-        <div><span>Interested in joining the movement?</span> <span className="description-title">Sign Up Now!</span></div>
+        <h2>{sectionTitle}</h2>
+        <div>
+          <span>{pageType === 'community' ? 'Become a member' : 'Join our community'}</span> 
+          <span className="description-title">{pageType === 'community' ? 'Apply To Join' : 'Register Now'}</span>
+        </div>
       </div>
 
       <div className="container" data-aos="fade-up" data-aos-delay="100">
-        <div className="row gy-2">
+        <div className="row gy-4">
+          {!useSimpleLayout && (
+            <>
+              <div className="col-lg-6">
+                <div className="info-item d-flex flex-column justify-content-center align-items-center">
+                  <i className="bi bi-map"></i>
+                  <h3>Our Address</h3>
+                  <p>Plot 11277 Road, Ceddi Plaza, Central Business District, Abuja, Nigeria.</p>
+                </div>
+              </div>
+
+              <div className="col-lg-3 col-md-6">
+                <div className="info-item d-flex flex-column justify-content-center align-items-center">
+                  <i className="bi bi-envelope"></i>
+                  <h3>Email Us</h3>
+                  <p>info@arewa19pyramid.com</p>
+                  <p>contact@arewa19pyramid.com</p>
+                </div>
+              </div>
+
+              <div className="col-lg-3 col-md-6">
+                <div className="info-item d-flex flex-column justify-content-center align-items-center">
+                  <i className="bi bi-telephone"></i>
+                  <h3>Call Us</h3>
+                  <p>+234 814 199 3707</p>
+                  <p>+234 70 Arewa19Pyramid</p>
+                </div>
+              </div>
+            </>
+          )}
+            
+          {useSimpleLayout && (
+            <>
+              <div className="col-lg-6">
+                <div className="row gy-4">
+                  <div className="col-md-6">
+                    <div className="info-item" data-aos="fade" data-aos-delay="200" style={{ alignItems: 'center', padding: 0 }}>
+                      <img src={logoSrc} alt="Arewa19 Logo" style={{ height: 100 }} />
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="info-item" data-aos="fade" data-aos-delay="300">
+                      <i className="bi bi-telephone"></i>
+                      <h3>Call Us</h3>
+                      <p>+234 814 199 3707</p>
+                      <p>+234 70 Arewa19Pyramid</p>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="info-item" data-aos="fade" data-aos-delay="400">
+                      <i className="bi bi-envelope"></i>
+                      <h3>Email Us</h3>
+                      <p>info@arewa19pyramid.com</p>
+                      <p>contact@arewa19pyramid.com</p>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="info-item" data-aos="fade" data-aos-delay="500" style={{ alignItems: 'center', padding: 0 }}>
+                      <i className="bi bi-geo-alt"></i>
+                      <h3>Find Us</h3>
+                      <p>Plot 11277 Road, Ceddi Plaza</p>
+                      <p>Abuja, Nigeria</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
           <div className="col-lg-12">
             <div className="form-container">
               {!formStatus.success ? (
@@ -229,21 +367,23 @@ const ContactSection = () => {
                               />
                             </div>
                             
-                            <div className="col-12">
-                              <label htmlFor="membership" className="form-label">Membership Type</label>
-                              <select 
-                                className="form-select" 
-                                id="membership" 
-                                name="membership"
-                                value={formState.membership}
-                                onChange={handleChange}
-                              >
-                                <option value="Regular Member">Regular Member</option>
-                                <option value="Volunteer">Volunteer</option>
-                                <option value="Donor">Donor</option>
-                                <option value="Partner">Partner Organization</option>
-                              </select>
-                            </div>
+                            {includeMembershipType && (
+                              <div className="col-12">
+                                <label htmlFor="membership" className="form-label">Membership Type</label>
+                                <select 
+                                  className="form-select" 
+                                  id="membership" 
+                                  name="membership"
+                                  value={formState.membership}
+                                  onChange={handleChange}
+                                >
+                                  <option value="Regular Member">Regular Member</option>
+                                  <option value="Volunteer">Volunteer</option>
+                                  <option value="Donor">Donor</option>
+                                  <option value="Partner">Partner Organization</option>
+                                </select>
+                              </div>
+                            )}
                             
                             <div className="col-12 mt-4 text-center">
                               <button 
@@ -279,6 +419,12 @@ const ContactSection = () => {
                       <img src={logoSrc} alt="Arewa19 Logo" style={{ height: 100, margin: '20px auto' }} className="d-block mx-auto" />
                     </div>
                     <p>Together, we can create lasting change in Northern Nigeria!</p>
+                    <button 
+                      className="btn btn-primary mt-3" 
+                      onClick={() => setFormStatus({...formStatus, success: false})}
+                    >
+                      Submit Another Application
+                    </button>
                   </div>
                 </div>
               )}

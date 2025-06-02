@@ -9,7 +9,7 @@ import AboutSection from '../components/AboutSection';
 import ServicesSection from '../components/ServicesSection';
 import CallToAction from '../components/CallToAction';
 import TestimonialsSection from '../components/TestimonialsSection';
-import ContactInfo from '../components/ContactInfo';
+import ContactSection from '../components/ContactSection';
 
 export default function Home() {
   useEffect(() => {
@@ -39,7 +39,14 @@ export default function Home() {
         <ServicesSection />
         <CallToAction />
         <TestimonialsSection />
-        <ContactInfo />
+        <ContactSection 
+          pageType="registration"
+          sectionTitle="Registration"
+          sectionDescription="Join our community"
+          formSource="registration_page"
+          includeMembershipType={false}
+          useSimpleLayout={true}
+        />
       </main>
 
       <Footer />
