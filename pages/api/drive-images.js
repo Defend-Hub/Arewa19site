@@ -1,17 +1,12 @@
 import { google } from 'googleapis';
-import path from 'path';
-import fs from 'fs';
 
 // Configure Google Drive API
 const configureGoogleDrive = () => {
-  // Load credentials from JSON file
-  const keyFilePath = path.join(process.cwd(), 'pages/api/striking-effort-439520-v9-cf3e883365bc.json');
-  const credentials = JSON.parse(fs.readFileSync(keyFilePath, 'utf8'));
-  
+  // Use environment variables for credentials
   const auth = new google.auth.JWT(
-    credentials.client_email,
+    process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
     null,
-    credentials.private_key,
+    process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
     ['https://www.googleapis.com/auth/drive.readonly']
   );
 
