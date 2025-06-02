@@ -1,8 +1,4 @@
 import { google } from 'googleapis';
-import axios from 'axios';
-import https from 'https';
-import fs from 'fs';
-import path from 'path';
 
 /**
  * API route that directly fetches images from Google Drive using the Drive API
@@ -44,21 +40,18 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Error proxying Google Drive image:', error);
     
-    // If we can't get the image, try to serve a placeholder
-    try {
-      const placeholderPath = path.join(process.cwd(), 'public', 'assets', 'img', 'placeholder.jpg');
-      const placeholderExists = fs.existsSync(placeholderPath);
-      
-      if (placeholderExists) {
-        res.setHeader('Content-Type', 'image/jpeg');
-        fs.createReadStream(placeholderPath).pipe(res);
-      } else {
-        res.status(404).send('Image not found');
+    // Return an error response with detailed error information
+    return res.status(500).json({
+      error: 'Failed to fetch image from Google Drive',
+      message: error.message,
+      details: error.response?.data || error.stack,
+      env: {
+        // Log whether credentials are available (without exposing them)
+        hasServiceAccountEmail: !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+        hasPrivateKey: !!process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY,
+        hasFolderId: !!process.env.GOOGLE_DRIVE_FOLDER_ID,
       }
-    } catch (fallbackError) {
-      console.error('Error serving placeholder:', fallbackError);
-      res.status(500).send('Error serving image');
-    }
+    });
   }
 }
 
@@ -81,19 +74,8 @@ async function configureGoogleDrive() {
         scopes: ['https://www.googleapis.com/auth/drive.readonly']
       });
     } else {
-      // Fallback to local credentials file
-      console.log('Using local credentials file for Google Drive authentication');
-      
-      const credentialsPath = path.join(process.cwd(), 'google-credentials.json');
-      
-      if (!fs.existsSync(credentialsPath)) {
-        throw new Error(`Credentials file not found at ${credentialsPath}`);
-      }
-      
-      auth = new google.auth.GoogleAuth({
-        keyFile: credentialsPath,
-        scopes: ['https://www.googleapis.com/auth/drive.readonly']
-      });
+      // No fallback available in production - must use environment variables
+      throw new Error('Google Drive API credentials not found in environment variables. Please set GOOGLE_SERVICE_ACCOUNT_EMAIL and GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY.');
     }
     
     return google.drive({ version: 'v3', auth });
